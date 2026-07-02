@@ -98,9 +98,13 @@ async function loadFinanceData() {
   }
   
   tbody.innerHTML = records.map(rec => {
-    const data = JSON.parse(rec.data);
-    const isIn = data.type === 'IN';
     const isSynced = rec.syncStatus === 'synced';
+    let data;
+    try { data = JSON.parse(rec.data); } catch (e) { data = {}; }
+    const type = (data && data.type) ? String(data.type) : '-';
+    const desc = (data && data.desc) ? String(data.desc) : '-';
+    const amount = (data && typeof data.amount === 'number') ? data.amount : 0;
+    const isIn = type === 'IN';
     return `
       <tr data-sync-uuid="${escapeHtml(rec.id)}">
         <td>${escapeHtml(new Date(rec.timestamp).toLocaleTimeString())}</td>
@@ -109,8 +113,8 @@ async function loadFinanceData() {
             ${isIn ? 'Pemasukan' : 'Pengeluaran'}
           </span>
         </td>
-        <td>${escapeHtml(data.desc)}</td>
-        <td style="font-weight: 500;">Rp ${escapeHtml(data.amount.toLocaleString())}</td>
+        <td>${escapeHtml(desc)}</td>
+        <td style="font-weight: 500;">Rp ${escapeHtml(amount.toLocaleString())}</td>
         <td class="sync-badge" style="color: ${isSynced ? 'var(--success)' : 'var(--warning)'}">
           ${isSynced ? '✔' : '⏳'}
         </td>
