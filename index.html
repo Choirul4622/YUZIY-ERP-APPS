@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>KIZIY APPS - ERP System</title>
+  <meta name="theme-color" content="#F5F5F7">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- Dexie.js for IndexedDB Wrapper -->
+  <script src="https://unpkg.com/dexie/dist/dexie.js"></script>
+</head>
+<body>
+
+  <!-- Global Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- Login Screen Overlay -->
+  <div id="login-screen" class="login-overlay">
+    <div class="login-card card">
+      <div class="logo-circle" style="margin: 0 auto 15px; width: 48px; height: 48px; font-size: 24px;">K</div>
+      <h2 style="text-align: center; margin-bottom: 5px;">Login KIZIY ERP</h2>
+      <p style="text-align: center; color: var(--text-secondary); margin-bottom: 24px; font-size: 14px;">Masukkan kredensial Anda</p>
+      
+      <form id="login-form">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="login-username" required placeholder="Contoh: admin">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-password" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn" id="btn-login" style="width: 100%; margin-top: 10px;">Masuk</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="app-layout" id="app-layout" style="display: none;">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-circle">K</div>
+        <h2>KIZIY ERP</h2>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#hrd" class="nav-item active" data-module="hrd">
+          <span class="icon">👥</span> HRD & Payroll
+        </a>
+        <a href="#crm" class="nav-item" data-module="crm">
+          <span class="icon">🤝</span> CRM
+        </a>
+        <a href="#pos" class="nav-item" data-module="pos">
+          <span class="icon">🛒</span> POS / Kasir
+        </a>
+        <a href="#inventory" class="nav-item" data-module="inventory">
+          <span class="icon">📦</span> Inventory
+        </a>
+        <a href="#finance" class="nav-item" data-module="finance">
+          <span class="icon">💰</span> Finance
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div id="connection-status" class="status-badge">Online</div>
+        <button id="btn-sync" class="btn btn-secondary" style="margin-top: 10px; width: 100%;">Sync Now</button>
+        <button id="btn-logout" class="btn btn-secondary" style="margin-top: 8px; width: 100%;">Logout</button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <header class="top-header">
+        <h1 id="module-title">HRD & Payroll</h1>
+        <div class="user-profile">
+          <div class="avatar">Admin</div>
+        </div>
+      </header>
+      
+      <div id="app-content" class="content-area">
+        <!-- Modul akan dirender di sini oleh app.js -->
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  
+  <!-- Module Scripts -->
+  <script src="js/modules/hrd.js"></script>
+  <script src="js/modules/crm.js"></script>
+  <script src="js/modules/pos.js"></script>
+  <script src="js/modules/inventory.js"></script>
+  <script src="js/modules/finance.js"></script>
+
+  <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .catch(err => console.log('SW registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>

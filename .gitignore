@@ -1,0 +1,23 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Node (jika nanti dipakai untuk tooling)
+node_modules/
+
+# Environment / local config
+.env
+.env.local
+*.local
+
+# Build artifacts
+dist/
+build/
