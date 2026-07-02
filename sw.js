@@ -1,6 +1,6 @@
 importScripts('https://unpkg.com/dexie/dist/dexie.js');
 
-const CACHE_NAME = 'kiziy-apps-v1';
+const CACHE_NAME = 'kiziy-apps-v2';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -122,9 +122,14 @@ async function processSyncQueue(gasUrl) {
 
         if (result && result.status === 'success') {
           // Sukses: hapus dari antrean + update status record lokal → 'synced'
+          const recordId = (item.payload && item.payload.id) ? item.payload.id : null;
+          if (recordId) {
+            try { await db.records.update(recordId, { syncStatus: 'synced' }); } catch (updErr) {
+              console.warn(`[SW] Tidak bisa update record ${recordId}: mungkin sudah dihapus auto-refresh.`, updErr);
+            }
+          }
           await db.syncQueue.delete(item.uuid);
-          await db.records.update(item.payload.id, { syncStatus: 'synced' });
-          await notifyClients_({ type: 'SYNC_SUCCESS', uuid: item.uuid, recordId: item.payload.id, module: item.payload.module });
+          await notifyClients_({ type: 'SYNC_SUCCESS', uuid: item.uuid, recordId: recordId, module: item.payload ? item.payload.module : null });
         } else {
           // Server merespons tapi MENOLAK (mis. 401 token kedaluwarsa / 403 RBAC / error lain).
           // JANGAN hapus — agar data tidak hilang. Beri tahu UI & hentikan loop
