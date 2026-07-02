@@ -74,12 +74,15 @@ async function loadCRMData() {
   }
   
   tbody.innerHTML = records.map(rec => {
-    const data = JSON.parse(rec.data);
     const isSynced = rec.syncStatus === 'synced';
+    let data;
+    try { data = JSON.parse(rec.data); } catch (e) { data = {}; }
+    const name = (data && data.name) ? String(data.name) : '-';
+    const source = (data && data.source) ? String(data.source) : '-';
     return `
       <tr data-sync-uuid="${escapeHtml(rec.id)}">
-        <td>${escapeHtml(data.name)}</td>
-        <td><span class="status-badge" style="background: var(--accent-color);">${escapeHtml(data.source)}</span></td>
+        <td>${escapeHtml(name)}</td>
+        <td><span class="status-badge" style="background: var(--accent-color);">${escapeHtml(source)}</span></td>
         <td class="sync-badge" style="color: ${isSynced ? 'var(--success)' : 'var(--warning)'}">
           ${isSynced ? '✔' : '⏳'}
         </td>
