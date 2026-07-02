@@ -122,12 +122,14 @@ async function loadPOSData() {
   }
   
   tbody.innerHTML = records.map(rec => {
-    const data = JSON.parse(rec.data);
     const isSynced = rec.syncStatus === 'synced';
+    let data;
+    try { data = JSON.parse(rec.data); } catch (e) { data = {}; }
+    const total = (data && typeof data.total === 'number') ? data.total : 0;
     return `
       <tr data-sync-uuid="${escapeHtml(rec.id)}">
         <td>${escapeHtml(new Date(rec.timestamp).toLocaleTimeString())}</td>
-        <td>Rp ${escapeHtml(data.total.toLocaleString())}</td>
+        <td>Rp ${escapeHtml(total.toLocaleString())}</td>
         <td class="sync-badge" style="color: ${isSynced ? 'var(--success)' : 'var(--warning)'}">
           ${isSynced ? '✔' : '⏳'}
         </td>
