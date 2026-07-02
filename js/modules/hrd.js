@@ -60,12 +60,15 @@ async function loadHRDData() {
   }
   
   tbody.innerHTML = records.map(rec => {
-    const data = JSON.parse(rec.data);
     const isSynced = rec.syncStatus === 'synced';
+    let data;
+    try { data = JSON.parse(rec.data); } catch (e) { data = {}; }
+    const lat = (data && typeof data.lat === 'number') ? data.lat : null;
+    const lng = (data && typeof data.lng === 'number') ? data.lng : null;
     return `
       <tr data-sync-uuid="${escapeHtml(rec.id)}">
         <td>${escapeHtml(new Date(rec.timestamp).toLocaleTimeString())}</td>
-        <td>${data.lat ? escapeHtml(data.lat.toFixed(4) + ', ' + data.lng.toFixed(4)) : '-'}</td>
+        <td>${lat !== null && lng !== null ? escapeHtml(lat.toFixed(4) + ', ' + lng.toFixed(4)) : '-'}</td>
         <td class="sync-badge" style="color: ${isSynced ? 'var(--success)' : 'var(--warning)'}">${isSynced ? '✔' : '⏳'}</td>
       </tr>
     `;
