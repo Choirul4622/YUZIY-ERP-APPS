@@ -117,15 +117,20 @@ async function loadInventoryData() {
   }
   
   tbody.innerHTML = records.map(rec => {
-    const data = JSON.parse(rec.data);
-    const isOut = data.type === 'OUT';
-    
+    const isSynced = rec.syncStatus === 'synced';
+    let data;
+    try { data = JSON.parse(rec.data); } catch (e) { data = {}; }
+    const item = (data && data.item) ? String(data.item) : '-';
+    const type = (data && data.type) ? String(data.type) : '-';
+    const qty = (data && typeof data.qty === 'number') ? data.qty : 0;
+    const isOut = type === 'OUT';
+
     // Render foto jika ada, baik dari URL public Drive (jika tersinkronisasi) atau Base64 lokal.
     // Atribut src di-escape untuk mencegah injeksi atribut via URL berbahaya.
     let photoHtml = '';
-    if (data.mediaUrl) {
+    if (data && data.mediaUrl) {
       photoHtml = `<img src="${escapeHtml(data.mediaUrl)}" alt="foto barang" style="height: 40px; border-radius: 4px; display: block; margin-top: 5px;">`;
-    } else if (data.mediaBase64) {
+    } else if (data && data.mediaBase64) {
       const safeMime = /^(image|application)\/[a-zA-Z0-9.+-]+$/.test(data.mimeType) ? data.mimeType : 'image/jpeg';
       photoHtml = `<img src="data:${escapeHtml(safeMime)};base64,${escapeHtml(data.mediaBase64)}" alt="foto barang" style="height: 40px; border-radius: 4px; display: block; margin-top: 5px;">`;
     }
@@ -134,13 +139,13 @@ async function loadInventoryData() {
       <tr data-sync-uuid="${escapeHtml(rec.id)}">
         <td>${escapeHtml(new Date(rec.timestamp).toLocaleTimeString())}</td>
         <td>
-          ${escapeHtml(data.item)}
+          ${escapeHtml(item)}
           ${photoHtml}
         </td>
-        <td><span class="status-badge" style="background: ${isOut ? 'var(--error)' : 'var(--success)'}">${escapeHtml(data.type)}</span></td>
-        <td>${isOut ? '-' : '+'}${escapeHtml(data.qty)}</td>
-        <td class="sync-badge" style="color: ${rec.syncStatus === 'synced' ? 'var(--success)' : 'var(--warning)'}">
-          ${rec.syncStatus === 'synced' ? '✔' : '⏳'}
+        <td><span class="status-badge" style="background: ${isOut ? 'var(--error)' : 'var(--success)'}">${escapeHtml(type)}</span></td>
+        <td>${isOut ? '-' : '+'}${escapeHtml(qty)}</td>
+        <td class="sync-badge" style="color: ${isSynced ? 'var(--success)' : 'var(--warning)'}">
+          ${isSynced ? '✔' : '⏳'}
         </td>
       </tr>
     `;
